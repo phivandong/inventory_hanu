@@ -1,9 +1,7 @@
 package com.pvdong.inventory.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +14,18 @@ public class Inventory {
     private Long length;
     private Long width;
     private Long height;
+
+    @Setter(AccessLevel.NONE)
     private List<InventoryItem> items;
+
+    public void setItems(List<InventoryItem> items) {
+        long quantityOfItems = items.stream().mapToLong(InventoryItem::getQuantity).sum();
+        if (quantityOfItems > getCapacity()) {
+            throw new RuntimeException("There is no space left in the inventory");
+        } else {
+            this.items = items;
+        }
+    }
 
     @JsonIgnore
     public long getCapacity() {
